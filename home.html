@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Usuários</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, #1e2937 0%, #334155 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+      padding: 50px 40px;
+      width: 100%;
+      max-width: 620px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      text-align: center;
+    }
+    h1 { font-size: 38px; margin-bottom: 8px; color: white; }
+    p { color: #94a3b8; font-size: 19px; margin-bottom: 40px; }
+    button {
+      width: 100%;
+      max-width: 420px;
+      padding: 18px;
+      margin: 12px auto;
+      display: block;
+      font-size: 18px;
+      font-weight: 600;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+    button:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-4px); }
+
+    #mensagem {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1f2937;
+      color: white;
+      padding: 16px 24px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      gap: 12px;
+      z-index: 1000;
+      border: 1px solid #4b5563;
+      font-size: 16px;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(5px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 998;
+    }
+    .modal-box {
+      background: #1f2937;
+      border: 1px solid #374151;
+      border-radius: 22px;
+      padding: 40px 32px;
+      max-width: 420px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.7);
+    }
+    .modal-box h2 { font-size: 22px; margin-bottom: 10px; }
+    .modal-box p { color: #94a3b8; font-size: 15px; margin-bottom: 28px; line-height: 1.6; }
+    .modal-btns { display: flex; flex-direction: column; gap: 12px; }
+    .modal-btns button {
+      width: 100%;
+      max-width: 100%;
+      padding: 15px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin: 0;
+    }
+    .modal-btns button:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+    .btn-ficar     { background: #10b981; color: white; border: 1px solid rgba(0,0,0,0.3); }
+    .btn-logout    { background: #3b82f6; color: white; border: 1px solid rgba(0,0,0,0.3); }
+    .btn-ok-logout { background: #3b82f6; color: white; border: 1px solid rgba(0,0,0,0.3); }
+    .btn-cancelar  { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(0,0,0,0.3); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Sistema</h1>
+    <p>Gerenciamento de Usuários</p>
+    <button onclick="window.location.href='cadastrar.html'">1 - Cadastrar Usuário</button>
+    <button onclick="window.location.href='listar.html'">2 - Listar Usuários</button>
+    <button onclick="window.location.href='atualizar.html'">3 - Atualizar Usuário</button>
+    <button onclick="window.location.href='deletar.html'">4 - Deletar Usuário</button>
+    <button onclick="window.location.href='recuperar.html'">5 - Recuperar Usuário</button>
+    <button onclick="abrirModalSair()">6 - Logout</button>
+  </div>
+
+  <div id="mensagem"></div>
+
+  <!-- Modal: Confirmar Logout -->
+  <div class="modal-overlay" id="modalSair">
+    <div class="modal-box">
+      <h2>👋 Deseja sair?</h2>
+      <p>Escolha uma opção abaixo.</p>
+      <div class="modal-btns">
+        <button class="btn-ficar"  onclick="fecharModalSair()">🟢 Não, Desejo Ficar</button>
+        <button class="btn-logout" onclick="abrirModalLogout()">🔵 Sim, Fazer Logout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Aviso de Logout -->
+  <div class="modal-overlay" id="modalLogout">
+    <div class="modal-box">
+      <h2>⚠️ Atenção</h2>
+      <p>Seus dados de acesso <strong style="color:#f87171;">não serão salvos</strong>. Na próxima vez que entrar, você precisará usar suas credenciais novamente.<br><br>Deseja continuar?</p>
+      <div class="modal-btns">
+        <button class="btn-ok-logout" onclick="fazerLogout()">✅ Ok, Fazer Logout</button>
+        <button class="btn-cancelar"  onclick="voltarDoLogout()">↩️ Não, Voltar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function mostrarMensagem(texto, tipo = "sucesso") {
+      const msg = document.getElementById("mensagem");
+      msg.innerHTML = tipo === "sucesso" ? `✅ ${texto}` : `❌ ${texto}`;
+      msg.style.display = "flex";
+      setTimeout(() => { msg.style.display = "none"; }, 3000);
+    }
+
+    function abrirModalSair() {
+      document.getElementById("modalSair").style.display = "flex";
+    }
+    function fecharModalSair() {
+      document.getElementById("modalSair").style.display = "none";
+    }
+    function abrirModalLogout() {
+      document.getElementById("modalSair").style.display = "none";
+      document.getElementById("modalLogout").style.display = "flex";
+    }
+    function voltarDoLogout() {
+      document.getElementById("modalLogout").style.display = "none";
+    }
+    function fazerLogout() {
+    localStorage.removeItem("logado");
+    localStorage.removeItem("usuarioCadastrado");
+    localStorage.removeItem("senhaCadastrada");
+    window.location.href = "login.html";
+  }
+  </script>
+</body>
+</html>
