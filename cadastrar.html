@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastrar Usuário</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, #1e2937 0%, #334155 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+      padding: 40px;
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+    h1 { text-align: center; margin-bottom: 30px; color: white; }
+    input {
+      width: 100%;
+      padding: 16px;
+      margin: 15px 0;
+      border-radius: 12px;
+      border: none;
+      background: rgba(255,255,255,0.1);
+      color: white;
+      font-size: 17px;
+    }
+    input::placeholder { color: #94a3b8; }
+    button {
+      width: 100%;
+      padding: 16px;
+      margin: 10px 0;
+      font-size: 17px;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-primary { background: #10b981; color: white; }
+    .btn-secondary { background: rgba(255,255,255,0.1); color: white; }
+    button:hover { transform: translateY(-3px); }
+    #mensagem {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1f2937;
+      color: white;
+      padding: 16px 24px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      gap: 12px;
+      z-index: 1000;
+      border: 1px solid #4b5563;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Cadastrar Usuário</h1>
+    <input type="text" id="nome" placeholder="Digite o nome completo do usuário">
+    <button class="btn-primary" onclick="cadastrar()">Cadastrar</button>
+    <button class="btn-secondary" onclick="window.location.href='index.html'">Voltar ao Menu</button>
+  </div>
+  <div id="mensagem"></div>
+  <script>
+    function mostrarMensagem(texto, tipo = "sucesso") {
+      const msg = document.getElementById("mensagem");
+      msg.innerHTML = tipo === "sucesso" ? `✅ ${texto}` : `❌ ${texto}`;
+      msg.style.display = "flex";
+      setTimeout(() => { msg.style.display = "none"; }, 3000);
+    }
+    function cadastrar() {
+      let nome = document.getElementById("nome").value.trim();
+      if (nome === "") {
+        mostrarMensagem("Por favor, digite um nome válido!", "erro");
+        return;
+      }
+      let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+      usuarios.push(nome);
+      localStorage.setItem("usuarios", JSON.stringify(usuarios));
+      mostrarMensagem(`Usuário "${nome}" cadastrado com sucesso!`);
+      document.getElementById("nome").value = "";
+    }
+  </script>
+</body>
+</html>

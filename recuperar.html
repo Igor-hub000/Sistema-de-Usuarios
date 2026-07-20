@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recuperar Usuário</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, #1e2937 0%, #334155 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+      padding: 40px;
+      width: 100%;
+      max-width: 700px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+    h1 { text-align: center; margin-bottom: 30px; color: white; }
+    li {
+      padding: 16px;
+      margin: 10px 0;
+      background: rgba(255,255,255,0.08);
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    button { padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; }
+    .btn-success { background: #10b981; color: white; }
+    .btn-voltar {
+      width: 100%;
+      padding: 16px;
+      margin-top: 20px;
+      font-size: 17px;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      background: rgba(255,255,255,0.1);
+      color: white;
+    }
+    #mensagem {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1f2937;
+      color: white;
+      padding: 16px 24px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      gap: 12px;
+      z-index: 1000;
+      border: 1px solid #4b5563;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Recuperar Usuário</h1>
+    <div id="listaRecuperar"></div>
+    <button class="btn-voltar" onclick="window.location.href='index.html'">Voltar ao Menu</button>
+  </div>
+  <div id="mensagem"></div>
+  <script>
+    function mostrarMensagem(texto, tipo = "sucesso") {
+      const msg = document.getElementById("mensagem");
+      msg.innerHTML = tipo === "sucesso" ? `✅ ${texto}` : `❌ ${texto}`;
+      msg.style.display = "flex";
+      setTimeout(() => { msg.style.display = "none"; }, 3000);
+    }
+    function carregarDeletados() {
+      let deletados = JSON.parse(localStorage.getItem("deletados")) || [];
+      const div = document.getElementById("listaRecuperar");
+      if (deletados.length === 0) {
+        div.innerHTML = "<p style='text-align:center; color:#94a3b8;'>Nenhum usuário deletado para recuperar.</p>";
+        return;
+      }
+      let html = "<ul>";
+      deletados.forEach((user, index) => {
+        html += `<li><span><strong>${index + 1}.</strong> ${user.nome} <small style="color:#94a3b8;">(${user.data_exclusao})</small></span><button class="btn-success" onclick="recuperar(${index})">Recuperar</button></li>`;
+      });
+      html += "</ul>";
+      div.innerHTML = html;
+    }
+    function recuperar(index) {
+      let deletados = JSON.parse(localStorage.getItem("deletados")) || [];
+      let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+      const recuperado = deletados.splice(index, 1)[0];
+      usuarios.push(recuperado.nome);
+      localStorage.setItem("usuarios", JSON.stringify(usuarios));
+      localStorage.setItem("deletados", JSON.stringify(deletados));
+      mostrarMensagem(`Usuário "${recuperado.nome}" recuperado com sucesso!`);
+      carregarDeletados();
+    }
+    window.onload = carregarDeletados;
+  </script>
+</body>
+</html>

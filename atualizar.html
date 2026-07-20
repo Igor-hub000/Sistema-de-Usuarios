@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atualizar Usuário</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, #1e2937 0%, #334155 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+      padding: 40px;
+      width: 100%;
+      max-width: 620px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+    h1 { text-align: center; margin-bottom: 30px; color: white; }
+    li {
+      padding: 16px;
+      margin: 10px 0;
+      background: rgba(255,255,255,0.08);
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    button { padding: 10px 18px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; }
+    .btn-update { background: #3b82f6; color: white; }
+    .btn-voltar {
+      width: 100%;
+      padding: 16px;
+      margin-top: 20px;
+      font-size: 17px;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      background: rgba(255,255,255,0.1);
+      color: white;
+    }
+    #mensagem {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1f2937;
+      color: white;
+      padding: 16px 24px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      gap: 12px;
+      z-index: 1000;
+      border: 1px solid #4b5563;
+      font-size: 16px;
+    }
+    #modalOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+    #modal {
+      background: #1f2937;
+      border: 1px solid #4b5563;
+      border-radius: 18px;
+      padding: 36px 32px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    }
+    #modal h2 { font-size: 22px; margin-bottom: 20px; text-align: center; }
+    #modal input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      background: rgba(255,255,255,0.1);
+      color: white;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+    .modal-btns { display: flex; gap: 12px; }
+    .modal-btns button { flex: 1; padding: 14px; font-size: 16px; font-weight: 600; border: none; border-radius: 12px; cursor: pointer; }
+    .modal-cancelar { background: rgba(255,255,255,0.1); color: white; }
+    .modal-confirmar { background: #3b82f6; color: white; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Atualizar Usuário</h1>
+    <div id="listaAtualizar"></div>
+    <button class="btn-voltar" onclick="window.location.href='index.html'">Voltar ao Menu</button>
+  </div>
+  <div id="mensagem"></div>
+  <div id="modalOverlay">
+    <div id="modal">
+      <h2>✏️ Editar Usuário</h2>
+      <input type="text" id="novoNomeInput" placeholder="Novo nome do usuário">
+      <div class="modal-btns">
+        <button class="modal-cancelar" onclick="fecharModal()">Cancelar</button>
+        <button class="modal-confirmar" onclick="confirmarAtualizar()">Salvar</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    let indexParaAtualizar = null;
+    let nomeAtualRef = "";
+
+    function mostrarMensagem(texto, tipo = "sucesso") {
+      const msg = document.getElementById("mensagem");
+      msg.innerHTML = tipo === "sucesso" ? `✅ ${texto}` : `❌ ${texto}`;
+      msg.style.display = "flex";
+      setTimeout(() => { msg.style.display = "none"; }, 3000);
+    }
+    function carregarParaAtualizar() {
+      let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+      const div = document.getElementById("listaAtualizar");
+      if (usuarios.length === 0) {
+        div.innerHTML = "<p style='text-align:center; color:#94a3b8;'>Nenhum usuário para atualizar.</p>";
+        return;
+      }
+      let html = "<ul>";
+      usuarios.forEach((user, index) => {
+        html += `<li><span><strong>${index + 1}.</strong> ${user}</span><button class="btn-update" onclick="abrirModal(${index}, '${user}')">Atualizar</button></li>`;
+      });
+      html += "</ul>";
+      div.innerHTML = html;
+    }
+    function abrirModal(index, nomeAtual) {
+      indexParaAtualizar = index;
+      nomeAtualRef = nomeAtual;
+      document.getElementById("novoNomeInput").value = nomeAtual;
+      document.getElementById("modalOverlay").style.display = "flex";
+      setTimeout(() => document.getElementById("novoNomeInput").focus(), 100);
+    }
+    function fecharModal() {
+      indexParaAtualizar = null;
+      document.getElementById("modalOverlay").style.display = "none";
+    }
+    function confirmarAtualizar() {
+      const novoNome = document.getElementById("novoNomeInput").value.trim();
+      if (!novoNome) { mostrarMensagem("Digite um nome válido!", "erro"); return; }
+      if (novoNome === nomeAtualRef) { fecharModal(); return; }
+      let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+      usuarios[indexParaAtualizar] = novoNome;
+      localStorage.setItem("usuarios", JSON.stringify(usuarios));
+      fecharModal();
+      mostrarMensagem(`Usuário atualizado para "${novoNome}" com sucesso!`);
+      carregarParaAtualizar();
+    }
+    window.onload = carregarParaAtualizar;
+  </script>
+</body>
+</html>

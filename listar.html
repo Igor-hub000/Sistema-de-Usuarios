@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Listar Usuários</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, #1e2937 0%, #334155 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+      padding: 40px;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+    h1 { text-align: center; margin-bottom: 30px; color: white; }
+    ul { list-style: none; padding: 0; }
+    li {
+      padding: 16px;
+      margin: 10px 0;
+      background: rgba(255,255,255,0.08);
+      border-radius: 12px;
+      font-size: 17px;
+    }
+    button {
+      width: 100%;
+      padding: 16px;
+      margin: 15px 0 10px;
+      font-size: 17px;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      background: rgba(255,255,255,0.1);
+      color: white;
+    }
+    button:hover { background: rgba(255,255,255,0.2); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Usuários Cadastrados</h1>
+    <div id="lista"></div>
+    <button onclick="window.location.href='index.html'">Voltar ao Menu</button>
+  </div>
+  <script>
+    function carregarLista() {
+      let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+      const divLista = document.getElementById("lista");
+      if (usuarios.length === 0) {
+        divLista.innerHTML = "<p style='text-align:center; color:#94a3b8;'>Nenhum usuário cadastrado ainda.</p>";
+        return;
+      }
+      let html = "<ul>";
+      usuarios.forEach((user, index) => {
+        html += `<li><strong>${index + 1}.</strong> ${user}</li>`;
+      });
+      html += "</ul>";
+      divLista.innerHTML = html;
+    }
+    window.onload = carregarLista;
+  </script>
+</body>
+</html>
